@@ -36,7 +36,17 @@ public class BaseBall : MonoBehaviour, IInputClickHandler
             return;
         if (collider.Raycast(new Ray(center, dir), out hit, 100))
         {
-            Collide(hit);
+            try
+            {
+                if (collider.Raycast(new Ray(center, dir), out hit, 10))
+                {
+                    Collide(hit);
+                }
+            }
+            catch (MissingReferenceException e)
+            {
+                Debug.Log("Exception: " + e.Message);
+            }
         }
     }
 
