@@ -32,9 +32,16 @@ public class BaseBall : MonoBehaviour
         var dir = impactPoint - center;
         dir.Normalize();
         RaycastHit hit;
-        if (collider.Raycast(new Ray(center, dir), out hit, 10))
+        try
         {
-            Collide(hit);
+            if (collider.Raycast(new Ray(center, dir), out hit, 10))
+            {
+                Collide(hit);
+            }
+        }
+        catch(MissingReferenceException e)
+        {
+            Debug.Log("Exception: " + e.Message);
         }
     }
 
