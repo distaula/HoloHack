@@ -50,7 +50,7 @@ public class GameController : MonoBehaviour
             Vector3 spawnPosition = new Vector3(Random.Range(leftWidth, rightWidth), height, Random.Range(awayDepth, awayDepth + 2));
 
             //Instatiate random fruit
-            spawnedBalls.Add(Instantiate(balls[0], spawnPosition, Random.rotation));
+            spawnedBalls.Add(Instantiate(balls[Random.Range(0, 2)], spawnPosition, Random.rotation));
             spawnedBalls[spawnedBalls.Count - 1].GetComponent<Rigidbody>().velocity = new Vector3(0, -1f, 0);
 
             Respawn(spawnedBalls[spawnedBalls.Count - 1]);
@@ -66,7 +66,7 @@ public class GameController : MonoBehaviour
         Vector3 spawnPosition = new Vector3(Random.Range(leftWidth, rightWidth), height, Random.Range(awayDepth, awayDepth + 2));
 
         //Instatiate random fruit
-        spawnedBalls.Add(Instantiate(balls[0], spawnPosition, Random.rotation));
+        spawnedBalls.Add(Instantiate(balls[Random.Range(0, 2)], spawnPosition, Random.rotation));
         var vel = new Vector3(Random.Range(-1f, 1), Random.Range(-1f, 1), Random.Range(-1f, 1));
         spawnedBalls[spawnedBalls.Count - 1].GetComponent<Rigidbody>().velocity = vel;
 
