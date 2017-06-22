@@ -2,7 +2,7 @@
 using System.Linq;
 using UnityEngine;
 
-public class BaseBall : MonoBehaviour
+public class BaseBall : MonoBehaviour, IInputClickHandler
 {
     //Variables
     private GameController gameController;
@@ -11,7 +11,6 @@ public class BaseBall : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-
         //Get GameController
         GameObject gamecontroller = GameObject.FindGameObjectWithTag("GameController");
         gameController = gamecontroller.GetComponent<GameController>();
@@ -25,6 +24,7 @@ public class BaseBall : MonoBehaviour
         if (collider.gameObject.tag == "Respawn")
         {
             gameController.Respawn(gameObject);
+            return;
         }
 
         var center = gameObject.GetComponent<SphereCollider>().center + gameObject.transform.position;
@@ -32,73 +32,55 @@ public class BaseBall : MonoBehaviour
         var dir = impactPoint - center;
         dir.Normalize();
         RaycastHit hit;
-        if (collider.Raycast(new Ray(center, dir), out hit, 10))
+        if (dir.magnitude == 0)
+            return;
+        if (collider.Raycast(new Ray(center, dir), out hit, 100))
         {
             Collide(hit);
         }
     }
 
-    protected void Collide(RaycastHit hit)
+    protected virtual void Collide(RaycastHit hit)
     {
         var normal = GetCollisionNormal(hit);
 
         // Now reflect the object's velocity around that normal to have it bounce off
         gameObject.GetComponent<Rigidbody>().velocity = Vector3.Reflect(gameObject.GetComponent<Rigidbody>().velocity, normal);
+
+
+        if (hit.collider.gameObject.tag == "Player")
+        {
+            HitPlayer();
+        }
     }
 
-    void OnCollisionEnter(Collision collision)
+    protected virtual void HitPlayer()
     {
-        //var normal = collision.contacts
-        //    .Select(contact => contact.normal)
-        //    .Aggregate((n1, n2) => n1 + n2) // Sum the normals
-        //    / collision.contacts.Count(); // Get the average
-        
-        //// Now reflect the object's velocity around that normal to have it bounce off
-        //gameObject.GetComponent<Rigidbody>().velocity = Vector3.Reflect(gameObject.GetComponent<Rigidbody>().velocity, normal);
-
-        //// Stop the falling sound
-        //objectSound.Pause();
-        
-        //if (collision.gameObject.tag == "Player")
-        //{
-        //    // I hit a player, better kill him
-        //    gameController.KillPlayer();
-        //    // Then destroy the ball so it doesn't instantly kill him more
-        //    Destroy(gameObject);
-        //}
+        // I hit a player, better kill him
+        gameController.KillPlayer();
+        // Then destroy the ball so it doesn't instantly kill him more
+        Destroy(gameObject);
     }
 
     public void OnInputClicked(InputClickedEventData eventData)
     {
-        //Check to see if bomb- deletes all fruits
-        if (gameObject.tag.Equals("Bomb"))
-        {
-            //Play bomb sound
-            gameController.BombClear();
-        }
-        else
-        {
-            //Add to Score
-            gameController.AddScore();
-
-            Destroy(gameObject);
-        }
+        Destroy(gameObject);
+        //var vel = gameObject.GetComponent<Rigidbody>().velocity;
+        //gameObject.GetComponent<Rigidbody>().velocity = new Vector3(vel.x, -vel.y, vel.z); 
     }
 
     private Vector3 GetCollisionNormal(RaycastHit hit)
     {
         if (hit.collider is SphereCollider)
         {
-            //Debug.Log("Hit SphereCollider");
             return GetSphereNormal(hit);
         }
-
-        //Debug.Log(hit.collider.gameObject.name);
+        
         MeshCollider collider = (MeshCollider)hit.collider;
         Mesh mesh = collider.sharedMesh;
         Vector3[] normals = mesh.normals;
         int[] triangles = mesh.triangles;
-
+        
         Vector3 n0 = normals[triangles[hit.triangleIndex * 3 + 0]];
         Vector3 n1 = normals[triangles[hit.triangleIndex * 3 + 1]];
         Vector3 n2 = normals[triangles[hit.triangleIndex * 3 + 2]];

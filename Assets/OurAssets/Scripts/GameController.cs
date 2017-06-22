@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using System.Linq;
 
 public class GameController : MonoBehaviour
 {
@@ -13,23 +15,15 @@ public class GameController : MonoBehaviour
     //The ball prefabs we'll drop- set in the Unity editor
     public GameObject[] balls;
 
-    //Score/Timer
-    private int score;
-    private float timer;
-
     //List of spawned fruits in play
     List<GameObject> spawnedBalls;
 
-    private AudioSource bombSound;
+    private AudioSource gameOverSound;
 
     void Start()
     {
-        //Set score and timer to start values
-        score = 0;
-        timer = 120f;
-
         //Get bomb sound
-        bombSound = gameObject.GetComponent<AudioSource>();
+        gameOverSound = gameObject.GetComponent<AudioSource>();
 
         spawnedBalls = new List<GameObject>();
 
@@ -41,7 +35,9 @@ public class GameController : MonoBehaviour
         awayDepth = cam.transform.position.z + 2;
 
         //Start spawning fruits
-        StartCoroutine(SpawnWaves());
+        //StartCoroutine(SpawnWaves());
+
+        AttachSpawnScripts();
     }
 
     //Spawn fruits
@@ -57,63 +53,82 @@ public class GameController : MonoBehaviour
             spawnedBalls.Add(Instantiate(balls[0], spawnPosition, Random.rotation));
             spawnedBalls[spawnedBalls.Count - 1].GetComponent<Rigidbody>().velocity = new Vector3(0, -1f, 0);
 
+            Respawn(spawnedBalls[spawnedBalls.Count - 1]);
+            
             //Wait before spawning another
-            yield return new WaitForSeconds(.5f);
+            yield return new WaitForSeconds(5f);
         }
     }
 
+    public void SpawnBall()
+    {
+        //Spawn the fruit within the player's view
+        Vector3 spawnPosition = new Vector3(Random.Range(leftWidth, rightWidth), height, Random.Range(awayDepth, awayDepth + 2));
+
+        //Instatiate random fruit
+        spawnedBalls.Add(Instantiate(balls[0], spawnPosition, Random.rotation));
+        var vel = new Vector3(Random.Range(-1f, 1), Random.Range(-1f, 1), Random.Range(-1f, 1));
+        spawnedBalls[spawnedBalls.Count - 1].GetComponent<Rigidbody>().velocity = vel;
+
+        Respawn(spawnedBalls[spawnedBalls.Count - 1]);
+    }
+    
     /// <summary>
     /// Used to respawn the ball inside the room the player is in
     /// </summary>
     /// <param name="go"></param>
     public void Respawn(GameObject go)
     {
-        var camera = GameObject.FindGameObjectWithTag("MainCamera");
-        var randomSpawnDir = new Vector3(Random.Range(0, 1), Random.Range(0, 1), Random.Range(0, 1));
-        randomSpawnDir.Normalize();
+        StartCoroutine(_respawn(go));
+    }
 
-        var pos = camera.transform.position;
-        RaycastHit hit;
-        if (Physics.Raycast(new Ray(pos, randomSpawnDir), out hit))
+    public IEnumerator _respawn(GameObject go)
+    {
+        var tries = 0;
+        while (true)
         {
+            if (tries++ > 50)
+                yield break;
+            var camera = GameObject.FindGameObjectWithTag("MainCamera");
+            var randomSpawnDir = new Vector3(Random.Range(0f, 1), Random.Range(.4f, 1), Random.Range(0f, 1));
+            randomSpawnDir.Normalize();
 
+            var pos = camera.transform.position;
+            RaycastHit hit;
+            if (Physics.Raycast(pos, randomSpawnDir, out hit))
+            {
+                // If we hit the outside wall or the respawn loc would be too close, try again
+                if (hit.collider.gameObject.tag == "Respawn" || hit.distance < 2f)
+                {
+                    yield return new WaitForSeconds(.25f);
+                    continue;
+                }
+                
+                var dist = hit.distance * 0.8f;
+                Vector3.Scale(randomSpawnDir, new Vector3(dist, dist, dist));
+                go.transform.position = pos + randomSpawnDir;
+                yield break;
+            }
+            // Our ray hit nothing, RED ALERT, but we can probably just ignorore it
+            yield break;
         }
     }
 
-    //Adds Score when tapping fruit
-    public void AddScore()
+    private void AttachSpawnScripts()
     {
-        score += 100;
+        var objs = GameObject.FindGameObjectsWithTag("Respawn");
+        objs.Select(o => o.AddComponent<SpawnBall>());
+        
+        var map = GameObject.FindGameObjectWithTag("Map");
+        map.AddComponent<SpawnBall>();
     }
-
-    //This function is called every fixed framerate frame
-    void FixedUpdate()
-    {
-        //Update Timer and Screen Text
-        timer -= Time.deltaTime;
-    }
-
-    //Called by bomb to clear field 
-    public void BombClear()
-    {
-        bombSound.Play();
-
-        while (spawnedBalls.Count > 0)
-        {
-            Destroy(spawnedBalls[0]);
-            spawnedBalls.RemoveAt(0);
-        }
-
-        //Take away time and score
-        timer -= 30;
-        score -= 500;
-    }
-
-    // Balls2Walls
+    
     public void KillPlayer() // Pass in sound effect based on ball?
     {
         // Multiple lives? Would have different action for losing a life and dying altogether
 
         // Change scenes, play sound
+        Debug.Log("Player Kilt");
+        SceneManager.LoadScene("Empty");
     }
 }
