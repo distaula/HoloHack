@@ -22,10 +22,6 @@ public class BaseBall : MonoBehaviour, IInputClickHandler
         //Get AudioSources
 		objectSound = gameObject.GetComponents<AudioSource>();
 		objectSound[0].pitch = Random.Range (1.1f, 0.9f);
-
-
-
-
     }
 
     private void OnTriggerEnter(Collider collider)
@@ -61,9 +57,6 @@ public class BaseBall : MonoBehaviour, IInputClickHandler
 		impactSource.pitch = Random.Range (1.2f, 0.8f);
 		impactSource.clip = impacts [Random.Range (0, 3)];
 		impactSource.Play();
-
-		
-
     }
 
     protected virtual void Collide(RaycastHit hit)
@@ -82,6 +75,7 @@ public class BaseBall : MonoBehaviour, IInputClickHandler
 
     protected virtual void HitPlayer()
     {
+        Debug.Log("Hit the player!");
         // I hit a player, better kill him
         gameController.KillPlayer();
         // Then destroy the ball so it doesn't instantly kill him more

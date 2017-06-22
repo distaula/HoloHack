@@ -128,7 +128,7 @@ public class GameController : MonoBehaviour
         // Multiple lives? Would have different action for losing a life and dying altogether
 
         // Change scenes, play sound
-        Debug.Log("Player Kilt");
+        gameOverSound.Play();
         SceneManager.LoadScene("Empty");
     }
 }
