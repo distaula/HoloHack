@@ -61,6 +61,25 @@ public class GameController : MonoBehaviour
             yield return new WaitForSeconds(.5f);
         }
     }
+
+    /// <summary>
+    /// Used to respawn the ball inside the room the player is in
+    /// </summary>
+    /// <param name="go"></param>
+    public void Respawn(GameObject go)
+    {
+        var camera = GameObject.FindGameObjectWithTag("MainCamera");
+        var randomSpawnDir = new Vector3(Random.Range(0, 1), Random.Range(0, 1), Random.Range(0, 1));
+        randomSpawnDir.Normalize();
+
+        var pos = camera.transform.position;
+        RaycastHit hit;
+        if (Physics.Raycast(new Ray(pos, randomSpawnDir), out hit))
+        {
+
+        }
+    }
+
     //Adds Score when tapping fruit
     public void AddScore()
     {

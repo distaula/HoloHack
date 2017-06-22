@@ -24,10 +24,7 @@ public class BaseBall : MonoBehaviour
     {
         if (collider.gameObject.tag == "Respawn")
         {
-            // Respawn the ball inside the room
-            var camera = GameObject.FindGameObjectWithTag("MainCamera");
-            var randomSpawn = new Vector3(Random.Range(0, 1), Random.Range(0, 1), Random.Range(0, 1));
-            randomSpawn.Normalize();
+            gameController.Respawn(gameObject);
         }
 
         var center = gameObject.GetComponent<SphereCollider>().center + gameObject.transform.position;
