@@ -1,4 +1,5 @@
 ﻿using HoloToolkit.Unity.InputModule;
+using System.Linq;
 using UnityEngine;
 
 public class FallingObjects : MonoBehaviour, IInputClickHandler
@@ -22,6 +23,9 @@ public class FallingObjects : MonoBehaviour, IInputClickHandler
 
     void OnCollisionEnter(Collision collision)
     {
+        var normal = collision.contacts.Select(contact => contact.normal).Aggregate((n1, n2) => n1+n2) / collision.contacts.Count(); // Or average over multiple
+        collision.gameObject.GetComponent<Rigidbody>().velocity = Vector3.Reflect(collision.gameObject.GetComponent<Rigidbody>().velocity, normal);
+
         //Hit the ground
         objectSound.Pause();
         
