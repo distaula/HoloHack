@@ -10,15 +10,15 @@ public class GameController : MonoBehaviour
     public float height;
     public float awayDepth;
 
-    //The fruit prefabs we'll drop- set in the Unity editor
-    public GameObject[] fruits;
+    //The ball prefabs we'll drop- set in the Unity editor
+    public GameObject[] balls;
 
     //Score/Timer
     private int score;
     private float timer;
 
     //List of spawned fruits in play
-    List<GameObject> spawnedFruits;
+    List<GameObject> spawnedBalls;
 
     private AudioSource bombSound;
 
@@ -31,7 +31,7 @@ public class GameController : MonoBehaviour
         //Get bomb sound
         bombSound = gameObject.GetComponent<AudioSource>();
 
-        spawnedFruits = new List<GameObject>();
+        spawnedBalls = new List<GameObject>();
 
         //Values chosen to spawn near view frame. Feel free to play around with them.
         var cam = Camera.main;
@@ -54,12 +54,32 @@ public class GameController : MonoBehaviour
             Vector3 spawnPosition = new Vector3(Random.Range(leftWidth, rightWidth), height, Random.Range(awayDepth, awayDepth + 2));
 
             //Instatiate random fruit
-            spawnedFruits.Add(Instantiate(fruits[Random.Range(0, 6)], spawnPosition, Random.rotation));
+            spawnedBalls.Add(Instantiate(balls[0], spawnPosition, Random.rotation));
+            spawnedBalls[spawnedBalls.Count - 1].GetComponent<Rigidbody>().velocity = new Vector3(0, -1f, 0);
 
             //Wait before spawning another
-            yield return new WaitForSeconds(3f);
+            yield return new WaitForSeconds(.5f);
         }
     }
+
+    /// <summary>
+    /// Used to respawn the ball inside the room the player is in
+    /// </summary>
+    /// <param name="go"></param>
+    public void Respawn(GameObject go)
+    {
+        var camera = GameObject.FindGameObjectWithTag("MainCamera");
+        var randomSpawnDir = new Vector3(Random.Range(0, 1), Random.Range(0, 1), Random.Range(0, 1));
+        randomSpawnDir.Normalize();
+
+        var pos = camera.transform.position;
+        RaycastHit hit;
+        if (Physics.Raycast(new Ray(pos, randomSpawnDir), out hit))
+        {
+
+        }
+    }
+
     //Adds Score when tapping fruit
     public void AddScore()
     {
@@ -78,14 +98,22 @@ public class GameController : MonoBehaviour
     {
         bombSound.Play();
 
-        while (spawnedFruits.Count > 0)
+        while (spawnedBalls.Count > 0)
         {
-            Destroy(spawnedFruits[0]);
-            spawnedFruits.RemoveAt(0);
+            Destroy(spawnedBalls[0]);
+            spawnedBalls.RemoveAt(0);
         }
 
         //Take away time and score
         timer -= 30;
         score -= 500;
+    }
+
+    // Balls2Walls
+    public void KillPlayer() // Pass in sound effect based on ball?
+    {
+        // Multiple lives? Would have different action for losing a life and dying altogether
+
+        // Change scenes, play sound
     }
 }
