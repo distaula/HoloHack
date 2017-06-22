@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Bomb
   - Ball
+  - Bounce
   layers:
   - Default
   - TransparentFX

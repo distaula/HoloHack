@@ -26,22 +26,24 @@ public class BaseBall : MonoBehaviour
         {
             gameController.Respawn(gameObject);
         }
-
-        var center = gameObject.GetComponent<SphereCollider>().center + gameObject.transform.position;
-        var impactPoint = collider.ClosestPointOnBounds(center);
-        var dir = impactPoint - center;
-        dir.Normalize();
-        RaycastHit hit;
-        try
+        if (collider.gameObject.tag == "Bounce")
         {
-            if (collider.Raycast(new Ray(center, dir), out hit, 10))
+            var center = gameObject.GetComponent<SphereCollider>().center + gameObject.transform.position;
+            var impactPoint = collider.ClosestPointOnBounds(center);
+            var dir = impactPoint - center;
+            dir.Normalize();
+            RaycastHit hit;
+            try
             {
-                Collide(hit);
+                if (collider.Raycast(new Ray(center, dir), out hit, 10))
+                {
+                    Collide(hit);
+                }
             }
-        }
-        catch(MissingReferenceException e)
-        {
-            Debug.Log("Exception: " + e.Message);
+            catch (MissingReferenceException e)
+            {
+                Debug.Log("Exception: " + e.Message);
+            }
         }
     }
 
