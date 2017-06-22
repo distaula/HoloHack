@@ -1,23 +1,32 @@
 ﻿using HoloToolkit.Unity.InputModule;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Audio;
 
 public class BaseBall : MonoBehaviour
 {
     //Variables
     private GameController gameController;
-    private AudioSource objectSound;
+    private AudioSource[] objectSound;
+	public AudioClip[] impacts; //array of different impact sfx for ball collisions]
+
 
     // Use this for initialization
     void Start()
     {
+		
 
         //Get GameController
         GameObject gamecontroller = GameObject.FindGameObjectWithTag("GameController");
         gameController = gamecontroller.GetComponent<GameController>();
 
-        //Get falling sound
-        objectSound = gameObject.GetComponent<AudioSource>();
+        //Get AudioSources
+		objectSound = gameObject.GetComponents<AudioSource>();
+		objectSound[0].pitch = Random.Range (1.1f, 0.9f);
+
+
+
+
     }
 
     private void OnTriggerEnter(Collider collider)
@@ -36,6 +45,10 @@ public class BaseBall : MonoBehaviour
         {
             Collide(hit);
         }
+		//play random impact sound with random pitch
+		objectSound[1].clip = impacts [Random.Range (0, 2)];
+		objectSound [1].pitch = Random.Range (1.1f, 0.9f);
+		objectSound[1].Play();
     }
 
     protected void Collide(RaycastHit hit)
