@@ -111,7 +111,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 243024127655363602, guid: fc09e546f60a54974a0102143c500ce6,
     type: 2}
-  m_audioClip: {fileID: 8300000, guid: b5d8d6875533b4a628be8720d187382f, type: 3}
+  m_audioClip: {fileID: 0}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
@@ -190,7 +190,8 @@ AudioSource:
   m_GameObject: {fileID: 1593137999043034}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 243024127655363602, guid: fc09e546f60a54974a0102143c500ce6,
+    type: 2}
   m_audioClip: {fileID: 8300000, guid: 63f2ca4b72776464589aefc60eba5c69, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
@@ -200,7 +201,7 @@ AudioSource:
   Spatialize: 0
   SpatializePostEffects: 0
   Priority: 128
-  DopplerLevel: 1
+  DopplerLevel: 0.1
   MinDistance: 1
   MaxDistance: 10
   Pan2D: 0
@@ -281,7 +282,7 @@ AudioSource:
   Spatialize: 0
   SpatializePostEffects: 0
   Priority: 128
-  DopplerLevel: 1
+  DopplerLevel: 0.1
   MinDistance: 1
   MaxDistance: 10
   Pan2D: 0
@@ -354,7 +355,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01f935658a16fc74e8f6b566bf66556b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  impacts: []
+  impactSource: {fileID: 82475954571039464}
+  impacts:
+  - {fileID: 8300000, guid: 63f2ca4b72776464589aefc60eba5c69, type: 3}
+  - {fileID: 8300000, guid: 3e0f39cd23b8b4267af17fb61f306884, type: 3}
+  - {fileID: 8300000, guid: f2e140b55e6de4da09a1e1f4524b4f24, type: 3}
 --- !u!135 &135411035797421526
 SphereCollider:
   m_ObjectHideFlags: 1

@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Bomb
   - Ball
+  - Floor
   layers:
   - Default
   - TransparentFX

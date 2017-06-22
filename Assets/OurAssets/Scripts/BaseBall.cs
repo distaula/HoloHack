@@ -8,6 +8,7 @@ public class BaseBall : MonoBehaviour
     //Variables
     private GameController gameController;
     private AudioSource[] objectSound;
+	public AudioSource impactSource;
 	public AudioClip[] impacts; //array of different impact sfx for ball collisions]
 
 
@@ -46,9 +47,12 @@ public class BaseBall : MonoBehaviour
             Collide(hit);
         }
 		//play random impact sound with random pitch
-		objectSound[1].clip = impacts [Random.Range (0, 2)];
-		objectSound [1].pitch = Random.Range (1.1f, 0.9f);
-		objectSound[1].Play();
+		impactSource.pitch = Random.Range (1.2f, 0.8f);
+		impactSource.clip = impacts [Random.Range (0, 3)];
+		impactSource.Play();
+
+		
+
     }
 
     protected void Collide(RaycastHit hit)
